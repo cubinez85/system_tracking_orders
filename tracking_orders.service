@@ -1,0 +1,17 @@
+[Unit]
+Description=Gunicorn daemon for your_project_name
+After=network.target postgresql.service
+
+[Service]
+User=cubinez85
+Group=www-data
+WorkingDirectory=/var/www/system_tracking_orders/
+Environment="PATH=/var/www/system_tracking_orders/venv/bin"
+ExecStart=/var/www/system_tracking_orders/venv/bin/gunicorn \
+          --workers 3 \
+          --bind 127.0.0.1:8000 \
+          config.wsgi:application
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
