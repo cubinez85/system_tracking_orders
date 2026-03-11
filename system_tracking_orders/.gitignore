@@ -1,0 +1,5 @@
+.env
+config/__pycache__/
+tracking/__pycache__/
+tracking/migrations/
+tracking/services/__pycache__/

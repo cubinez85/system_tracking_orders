@@ -1,0 +1,74 @@
+{% extends 'tracking/base.html' %}
+
+{% block title %}Отследить заказ{% endblock %}
+
+{% block content %}
+<div class="track-form">
+    <form method="get">
+        <input type="text" name="track" placeholder="Введите трек-номер СДЭК" value="{{ track_number }}" required>
+        <button type="submit">Отследить</button>
+    </form>
+</div>
+
+{% if info %}
+    <div class="order-info">
+        <h2>Информация по трек-номеру {{ info.track_number }}</h2>
+        
+        <div class="status">
+            <p><strong>Статус:</strong> {{ info.status }}</p>
+            {% if info.source %}
+                <p><small>Источник: {{ info.source }}</small></p>
+            {% endif %}
+            {% if info.url %}
+                <p><a href="{{ info.url }}" target="_blank">Посмотреть на сайте СДЭК</a></p>
+            {% endif %}
+            {% if info.note %}
+                <p class="note">{{ info.note }}</p>
+            {% endif %}
+        </div>
+        
+        {% if info.details %}
+            <h3>Детали</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Статус</th>
+                        <th>Город</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for detail in info.details %}
+                    <tr>
+                        <td>{{ detail.date|default:"-" }}</td>
+                        <td>{{ detail.status }}</td>
+                        <td>{{ detail.city|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+{% elif track_number %}
+    <div class="error">
+        Не удалось получить информацию по трек-номеру {{ track_number }}
+    </div>
+{% endif %}
+
+<script>
+// AJAX версия для динамического обновления
+document.getElementById('track-form')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const track = document.querySelector('input[name="track"]').value;
+    
+    fetch(`/api/track/?track=${track}`)
+        .then(response => response.json())
+        .then(data => {
+            // Обновляем страницу с результатами
+            console.log(data);
+            // Здесь можно динамически обновить DOM
+        })
+        .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %}
